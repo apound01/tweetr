@@ -6,15 +6,42 @@
 
 $(document).ready(() => {
 
+//function to calculate milliseconds into time since post
+function timeSince(date) {
+var seconds = Math.floor((new Date() - date) / 1000);
+var interval = Math.floor(seconds / 31536000);
+  if (interval > 1) {
+      return interval + " years";
+  }
+  interval = Math.floor(seconds / 2592000);
+  if (interval > 1) {
+      return interval + " months";
+  }
+  interval = Math.floor(seconds / 86400);
+  if (interval > 1) {
+      return interval + " days";
+  }
+  interval = Math.floor(seconds / 3600);
+  if (interval > 1) {
+      return interval + " hours";
+  }
+  interval = Math.floor(seconds / 60);
+  if (interval > 1) {
+      return interval + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
+}
 
+//function to add tweets to database
 function renderTweets(tweets) {
-  $('.all-tweets').empty();
+  $('.all-tweets').empty(); //prevents from readding all previous tweets
   tweets.forEach(function(tweet) {
-      $('.all-tweets').prepend(createTweetElement(tweet));
+      $('.all-tweets').prepend(createTweetElement(tweet)); //add to beginning of DB
     });
 }
 
-var createTweetElement = (tweetData) => {
+var createTweetElement = (tweetData) => { //create tweet to article HTML
+    var date = timeSince(tweetData.created_at); //changes date format
     var tweet_html =
     `<article class="tweet">
     <header>
@@ -33,7 +60,7 @@ var createTweetElement = (tweetData) => {
     </p>
 </div>
     <footer>
-    <p class="time">${tweetData.created_at} days ago</p>
+    <p class="time">${date} ago</p>
               <img class="likes" src="/images/flag.png">
               <img class="likes" src="/images/retweet.png">
               <img class="likes" src="/images/heart.png">
@@ -50,18 +77,17 @@ const handleError = (method) => {
 			}
 		}
 
-$("#newTweet").submit((event) => {
+$("#newTweet").submit((event) => { //on submit of newTweet buttom
 event.preventDefault();
 
-console.log("inside submit");
   $.ajax ({
       method: "POST",
       url: "/tweets",
       data: $("#newTweet").serialize(),
       success: (response) => {
-        loadTweets()
-        $("#newTweet")[0].reset();
-        $(".counter").text("140");
+        loadTweets() //loads new tweets with refresh
+        $("#newTweet")[0].reset(); //resets container to empty
+        $(".counter").text("140"); //resets counter to 140
         }
       });
     //fail: handleError('submitTweet')
@@ -83,8 +109,8 @@ var loadTweets = () => {
 loadTweets();
 
 $('#compose').on("click", () => {
-  $(".new-tweet").slideToggle();
-  $('textarea').select();
+  $(".new-tweet").slideToggle(); //on click toggles new tweet section into view
+  $('textarea').select(); //autoselects text area
 });
 
 });
